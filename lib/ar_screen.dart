@@ -16,12 +16,21 @@ class ARScreen extends StatefulWidget {
 
 class _ARScreenState extends State<ARScreen> {
   late ARKitController arKitController;
+  late ARKitGltfNode node;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('AR Screen Home'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              _changeColor();
+            },
+            icon: const Icon(Icons.color_lens_outlined),
+          ),
+        ],
       ),
       body: ARKitSceneView(
         showFeaturePoints: true,
@@ -48,15 +57,28 @@ class _ARScreenState extends State<ARScreen> {
       point.worldTransform.getColumn(3).y,
       point.worldTransform.getColumn(3).z,
     );
-
-    final node = await _getNodeFromNetwork(position);
+    // final node  = await _getNodeFromNetwork(position);
+     node = await _getNodeFromNetwork(position);
     arKitController.add(node);
-    ;
+
   }
 
+  /*
+  // ------------ Load Model From Asset
+  ARKitGltfNode _getNodeFromFlutterAsset(vector.Vector3 position) =>
+      ARKitGltfNode(
+        assetType: AssetType.flutterAsset,
+        // Box model from
+        // https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Box/glTF-Binary/Box.glb
+        url: 'assets/curtain_vertical.glb',
+        scale: vector.Vector3(0.05, 0.05, 0.05),
+        position: position,
+      );
+  // ------------------------------------------------------------
+  */
   Future<ARKitGltfNode> _getNodeFromNetwork(vector.Vector3 position) async {
     final file = await _downloadFile(
-        "https://firebasestorage.googleapis.com/v0/b/flutter-ar-427312.appspot.com/o/sample_curtain.glb?alt=media&token=5f985ba1-2dca-477b-8c49-563abbf0830e");
+        "https://firebasestorage.googleapis.com/v0/b/fir-practice-7ec8c.appspot.com/o/Scene%20(3).glb?alt=media&token=81c068ea-f002-4d08-8157-f90a5e5845b4");
     if (file.existsSync()) {
       //Load from app document folder
       return ARKitGltfNode(
@@ -81,5 +103,9 @@ class _ARScreenState extends State<ARScreen> {
       print('Caught an exception: $e');
       rethrow;
     }
+  }
+
+  void _changeColor(){
+    // ar KitController.update(node.name,node: node,materials:[ARKitMaterial(specular: ARKitMaterialProperty.color(Colors.red))] );
   }
 }
